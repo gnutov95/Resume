@@ -4,21 +4,25 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
 
 	fs := http.FileServer(http.Dir("./static"))
-
-	// Обработка всех запросов
 	http.Handle("/", fs)
 
-	port := "8080"
-	fmt.Printf("Сервер запущен на http://localhost:%s\n", port)
+	// Fly передаёт порт через переменную PORT
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
-	err := http.ListenAndServe(":"+port, nil)
+	addr := "0.0.0.0:" + port
+	fmt.Printf("Сервер запущен на %s\n", addr)
+
+	err := http.ListenAndServe(addr, nil)
 	if err != nil {
 		log.Fatal("Ошибка запуска сервера:", err)
 	}
-
 }
